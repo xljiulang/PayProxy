@@ -506,6 +506,12 @@
             数据包协议异常
             </summary>
         </member>
+        <member name="M:NetworkSocket.Fast.ProtocolException.#ctor(System.String)">
+            <summary>
+            数据包协议异常
+            </summary>
+            <param name="message"></param>
+        </member>
         <member name="T:NetworkSocket.Fast.LoopWorker">
             <summary>
             由一个线程循环工作的对象
@@ -1650,7 +1656,7 @@
              当操作中遇到处理异常时，将触发此方法
             </summary>
             <param name="packet">数据包对象</param>
-            <param name="pxception">异常对象</param>
+            <param name="exception">异常对象</param>
             <param name="exceptionHandled">异常是否已处理</param>
         </member>
         <member name="M:NetworkSocket.Fast.FastTcpClient.InvokeApi(System.String,System.Object[])">
