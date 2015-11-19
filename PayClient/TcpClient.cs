@@ -1,4 +1,5 @@
-﻿using NetworkSocket.Fast;
+﻿using NetworkSocket.Core;
+using NetworkSocket.Fast;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

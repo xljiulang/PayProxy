@@ -3,94 +3,61 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NetworkSocket.Fast;
+using NetworkSocket.Http;
 using System.Text.RegularExpressions;
-using PayProxy.Http;
+using NetworkSocket.Fast;
 
 namespace PayProxy.Services
 {
     /// <summary>
     /// Http监听服务
     /// </summary>
-    public class HttpListener : TcpServerBase<SessionBase>
+    public class HttpListener : HttpServerBase
     {
         /// <summary>
-        /// Tcp服务
+        /// Tcp服务器
         /// </summary>
-        private TcpListener tcpListener = new TcpListener();
+        private FastTcpServer tcpServer = new FastTcpServer();
 
         /// <summary>
         /// 开始启动监听
         /// </summary>
         public void StartListen()
         {
-            this.tcpListener.StartListen(AppConfig.TcpPort);
+            this.tcpServer.StartListen(AppConfig.TcpPort);
             base.StartListen(AppConfig.HttpURL.Port);
         }
 
         /// <summary>
-        /// 创建新会话
+        /// 收到http请求
         /// </summary>
+        /// <param name="request"></param>
+        /// <param name="response"></param>
+        protected override void OnHttpRequest(HttpRequest request, HttpResponse response)
+        {
+            if (string.Equals(request.Path, AppConfig.HttpURL.AbsolutePath, StringComparison.OrdinalIgnoreCase))
+            {
+                var parameters = string.Join("&", request.Form, request.Query).Trim('&');
+                this.TryPushParameters(parameters);
+            }
+            response.Write("OK");
+        }
+
+        /// <summary>
+        /// 推送参数到所有客户端对象
+        /// </summary>
+        /// <param name="parameters">http请求参数</param>
         /// <returns></returns>
-        protected override SessionBase OnCreateSession()
+        private void TryPushParameters(string parameters)
         {
-            return new SessionBase();
-        }
-
-        /// <summary>
-        /// 收到tcp请求
-        /// </summary>
-        /// <param name="session">会话</param>
-        /// <param name="buffer">数据</param>
-        protected override void OnReceive(SessionBase session, ReceiveBuffer buffer)
-        {
-            var request = HttpRequest.From(buffer);
-            if (request == null)
+            foreach (var session in this.tcpServer.AllSessions)
             {
-                return;
-            }
-            this.OnHttpRequest(session, request);
-        }
-
-        /// <summary>
-        /// 收到Http请求
-        /// </summary>
-        /// <param name="session">会话</param>
-        /// <param name="request">请求内容</param>
-        private void OnHttpRequest(SessionBase session, HttpRequest request)
-        {
-            // 请求URL
-            var requestURL = new Uri(string.Concat(AppConfig.HttpURL.Scheme, "://", AppConfig.HttpURL.Authority, request.Path));
-
-            if (string.Equals(AppConfig.HttpURL.AbsolutePath, requestURL.AbsolutePath, StringComparison.OrdinalIgnoreCase))
-            {
-                var parameters = string.Empty;
-                if (string.Equals(request.Method, "GET", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    parameters = requestURL.Query.TrimStart('?');
+                    session.InvokeApi("OnHttpRequest", parameters);
                 }
-                else
-                {
-                    parameters = request.Body;
-                }
-                this.OnHttpURLRequest(parameters);
+                catch (Exception) { }
             }
-
-            var response = new HttpResponse(session);
-            response.EmptyResult();
-        }
-
-        /// <summary>
-        /// 收到符合HttpURL的http请求
-        /// </summary>
-        /// <param name="parameters">参数</param>
-        private void OnHttpURLRequest(string parameters)
-        {
-            Console.ResetColor();
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(string.Format("{0} 收到Http请求：{1}", DateTime.Now.ToString("HH:mm:ss.fff"), parameters));
-
-            this.tcpListener.TryPushParametersAsync(parameters);
         }
     }
 }

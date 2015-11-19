@@ -32,8 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NetworkSocket">
-      <HintPath>..\Libs\NetworkSocket.dll</HintPath>
+    <Reference Include="NetworkSocket, Version=1.4.4.0, Culture=neutral, PublicKeyToken=48bdd02a78b31d80, processorArchitecture=MSIL">
+      <HintPath>..\packages\NetworkSocket.1.4.4\lib\net40\NetworkSocket.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -51,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
