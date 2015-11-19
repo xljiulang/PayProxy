@@ -28,10 +28,13 @@ namespace PayProxy
 
                 WriteLog("正在模拟Http请求 ..");
                 var httpClient = new System.Net.WebClient();
-                httpClient.Headers.Add(System.Net.HttpRequestHeader.ContentType, "pplication/x-www-form-urlencoded");
+                httpClient.Headers.Add(System.Net.HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
                 var postString = "type=test&time=" + DateTime.Now.ToString(@"yyyy\/MM\/dd HH:mm:ss");
 
-                httpClient.UploadData(AppConfig.HttpURL, "post", Encoding.UTF8.GetBytes(postString));
+                var bytes = httpClient.UploadData(AppConfig.HttpURL, "post", Encoding.UTF8.GetBytes(postString));
+                var response = Encoding.UTF8.GetString(bytes);
+
+                WriteLog("服务器收到参数：" + response);
                 WriteLog("请检查tcp客户端是否收到模拟请求的参数 ..");
             }
         }

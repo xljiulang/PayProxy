@@ -35,12 +35,12 @@ namespace PayProxy.Services
         /// <param name="response"></param>
         protected override void OnHttpRequest(HttpRequest request, HttpResponse response)
         {
+            var parameters = string.Join("&", request.Form, request.Query).Trim('&');
             if (string.Equals(request.Path, AppConfig.HttpURL.AbsolutePath, StringComparison.OrdinalIgnoreCase))
-            {
-                var parameters = string.Join("&", request.Form, request.Query).Trim('&');
+            {                
                 this.TryPushParameters(parameters);
             }
-            response.Write("OK");
+            response.Write(parameters);
         }
 
         /// <summary>
