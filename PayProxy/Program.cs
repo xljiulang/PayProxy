@@ -14,10 +14,11 @@ namespace PayProxy
         static void Main(string[] args)
         {
             Console.Title = "支付回调代理服务";
-
             WriteLog("正在启动服务 ..");
+
             var http = new HttpListener();
             http.StartListen();
+
             WriteLog("支付回调代理服务启动完成 ..");
             Console.WriteLine();
 
@@ -25,19 +26,24 @@ namespace PayProxy
             {
                 WriteLog("按任意键触发一个http模拟请求 ..");
                 Console.ReadKey();
-
-                WriteLog("正在模拟Http请求 ..");
-                var httpClient = new System.Net.WebClient();
-                httpClient.Headers.Add(System.Net.HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
-                var postString = "type=test&time=" + DateTime.Now.ToString(@"yyyy\/MM\/dd HH:mm:ss");
-
-                var bytes = httpClient.UploadData(AppConfig.HttpURL, "post", Encoding.UTF8.GetBytes(postString));
-                var response = Encoding.UTF8.GetString(bytes);
-
-                WriteLog("服务器收到参数：" + response);
-                WriteLog("请检查tcp客户端是否收到模拟请求的参数 ..");
+                RequestTest();
             }
         }
+
+        static void RequestTest()
+        {
+            WriteLog("正在模拟Http请求 ..");
+            var httpClient = new System.Net.WebClient();
+            httpClient.Headers.Add(System.Net.HttpRequestHeader.ContentType, "application/x-www-form-urlencoded");
+
+            var parameters = "action=测试&type=test";
+            var bytes = httpClient.UploadData(AppConfig.HttpURL, "post", Encoding.UTF8.GetBytes(parameters));
+            var response = Encoding.UTF8.GetString(bytes);
+
+            WriteLog("服务器收到参数：" + response);
+            WriteLog("请检查tcp客户端是否收到模拟请求的参数 ..");
+        }
+
 
         static void WriteLog(string log)
         {

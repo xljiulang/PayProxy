@@ -21,14 +21,14 @@ namespace PayClient
         [Api]
         public void OnHttpRequest(string parameters)
         {
-            this.WriteLog("收到Http参数：" + parameters);
             try
             {
+                this.WriteLog("收到Http参数：" + parameters);
                 var address = ConfigurationManager.AppSettings["ForwardURL"];
                 var httpClient = new WebClient();
                 httpClient.Headers.Add(HttpRequestHeader.ContentType, "pplication/x-www-form-urlencoded");
-                httpClient.UploadData(address, "post", Encoding.UTF8.GetBytes(parameters));
-                this.WriteLog("推送成功：" + address);
+                var response = httpClient.UploadData(address, "post", Encoding.UTF8.GetBytes(parameters));
+                this.WriteLog("推送成功：" + Encoding.UTF8.GetString(response));
             }
             catch (Exception ex)
             {
