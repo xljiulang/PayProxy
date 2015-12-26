@@ -3,34 +3,20 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace PayProxy
 {
-    /// <summary>
-    /// 配置项
-    /// </summary>
     public static class AppConfig
     {
         /// <summary>
-        /// 当HttpURL收到Http请求时,将请求参数转发给tcp客户端
+        /// 获取回调的URL
         /// </summary>
-        public static Uri HttpURL
-        {
-            get
-            {
-                return new Uri(ConfigurationManager.AppSettings["HttpURL"]);
-            }
-        }
+        public readonly static Uri LinstenURL = new Uri(ConfigurationManager.AppSettings["LinstenURL"]);
 
         /// <summary>
-        /// Tcp服务器监听的端口
+        /// 获取路径过滤
         /// </summary>
-        public static int TcpPort
-        {
-            get
-            {
-                return int.Parse(ConfigurationManager.AppSettings["TcpPort"]);
-            }
-        }
+        public readonly static Regex PathPattern = new Regex(ConfigurationManager.AppSettings["PathPattern"], RegexOptions.IgnoreCase);
     }
 }
